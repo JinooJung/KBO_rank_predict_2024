@@ -56,8 +56,8 @@ sd = [np.sqrt(mse * (1 + 1/len(X) + (x - np.mean(X))**2 / Sxx)) for x in real_da
 Z = [(real_data[i][0] - predicted[i]) / sd[i] for i in range(len(real_data))]
 percentile = [1 - stats.norm.cdf(z) for z in Z]
 
-better_weight = [0.5/percentile[i] for i in range(len(real_data))]
-worse_weight = [0.5/(1-percentile[i]) for i in range(len(real_data))]
+better_weight = [(0.5/percentile[i])**2 for i in range(len(real_data))]
+worse_weight = [(0.5/(1-percentile[i]))**2 for i in range(len(real_data))]
 
 team_names = ["LG", "KT", "SSG", "NC", "두산", "KIA", "롯데", "삼성", "한화", "키움"]
 
