@@ -7,21 +7,21 @@ from sklearn.metrics import mean_squared_error
 import pickle
 
 ### Load win rate data
-# data = {}
+data = {}
 
-# for year in tqdm(range(1969,2024)):
-#     table = statsapi.standings_data(season=year)
-#     for div in table.keys():
-#         for datum in table[div]["teams"]:
-#             name = datum['name']
-#             rate = datum['w'] / (datum['w'] + datum['l'])
-#             if name in data.keys():
-#                 data[name].append(rate)
-#             else:
-#                 data[name] = [rate]
+for year in tqdm(range(1969,2024)):
+    table = statsapi.standings_data(season=year)
+    for div in table.keys():
+        for datum in table[div]["teams"]:
+            name = datum['name']
+            rate = datum['w'] / (datum['w'] + datum['l'])
+            if name in data.keys():
+                data[name].append(rate)
+            else:
+                data[name] = [rate]
                 
-# with open('data.pkl', 'wb') as f:
-#     pickle.dump(data, f)
+with open('data.pkl', 'wb') as f:
+    pickle.dump(data, f)
 
 
 ### Make rate pair
