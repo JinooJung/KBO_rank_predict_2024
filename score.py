@@ -2,7 +2,7 @@ import pickle
 
 ################################ Real Results ################################
 answers = [
-    ["현재", "기엘쓱엔두삼한케롯키",[1, 2/3, 2/3, 2/3, 2/3, 2/3, 2/3, 0, 0, 0]]
+    ["3월 종료 시점", "한기엔쓱엘두키삼롯케",[7/8, 5/6, 4/6, 5/8, 4/7, 4/8, 2/6, 2/7, 1/6, 1/8]]
 ]   
 
 
@@ -82,6 +82,15 @@ def score(ans):
             temp["final_score"] = sum(temp["score_by_team"]) * (1-temp["bonus"]/100)
           
         scoreboard.append(temp.copy())
+        
+    scoreboard = sorted(scoreboard, key=lambda x: x["final_score"], reverse=True)
+    prev_score = -1
+    for i in range(len(scoreboard)):
+        if(scoreboard[i]["final_score"]!=prev_score):
+            scoreboard[i]["rank"] = i+1
+            prev_score = scoreboard[i]["final_score"]
+        else:
+            scoreboard[i]["rank"] = scoreboard[i-1]["rank"]
     
     return time, scoreboard
 
@@ -92,13 +101,13 @@ def latest_score():
     print("이름\t", end="")
     for team in team_names:
         print(team, end="\t")
-    print("보너스\t최종점수")
+    print("보너스\t최종점수\t순위")
     
     for s in scoreboard:
         print(s["name"], end="\t")
         for ss in s["score_by_team"]:
             print(f"{ss:.1f}", end="\t")
-        print(f"{int(s['bonus'])}%\t{s['final_score']:.2f}")
+        print(f"{int(s['bonus'])}%\t{s['final_score']:.2f}\t\t{s['rank']}")
         
         
 
