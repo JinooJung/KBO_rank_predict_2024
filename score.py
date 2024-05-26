@@ -3,7 +3,8 @@ import pickle
 ################################ Real Results ################################
 answers = [
     ["3월 종료 시점", "한기엔쓱엘두키삼롯케",[7/8, 5/6, 4/6, 5/8, 4/7, 4/8, 2/6, 2/7, 1/6, 1/8]],
-    ["4월 종료 시점", "기엔삼쓱엘두키한케롯", [21/31, 20/31, 18/31, 17/31, 16/31, 16/33, 14/30, 13/31, 12/32, 8/29]]
+    ["4월 종료 시점", "기엔삼쓱엘두키한케롯", [21/31, 20/31, 18/31, 17/31, 16/31, 16/33, 14/30, 13/31, 12/32, 8/29]],
+    ["5월 25일", "기두삼엔엘쓱케한키롯", [30/50, 30/52, 28/50, 27/50, 28/51, 25/51, 23/51, 21/50, 20/50, 19/47]]
 ]   
 
 
@@ -51,7 +52,7 @@ def score(ans):
     worst_index = gaps.index(min(gaps))
     print("매우잘한팀:", team_names[best_index], ", 매우 못한팀:", team_names[worst_index])
     
-    score_template = {"name":"", "score_by_team":[0 for _ in range(10)], "bonus":0, "final_score":0}
+    score_template = {"name":"", "score_by_team":[0 for _ in range(10)], "bonus":0, "final_score":0, "tie_breaker":[0 for _ in range(10)]}
     scoreboard = []
     for pa in player_answers:
         temp = score_template.copy()
@@ -61,8 +62,10 @@ def score(ans):
             team_index = ansen[i]
             if(gaps[team_index]>=0):
                 temp["score_by_team"][team_index] = float(weight[team_index][1]) * gaps[team_index] * 1000
+                temp["tie_breaker"][team_index] = float(weight[team_index][1]) * gaps[team_index] * 1000
             else:
                 temp["score_by_team"][team_index] = float(weight[team_index][2]) * gaps[team_index] * 1000
+                temp["tie_breaker"][team_index] = float(weight[team_index][2]) * gaps[team_index] * 1000
                 
             if(team_index in pa[1][0] or team_index in pa[1][1]):
                 pass
@@ -70,6 +73,13 @@ def score(ans):
                 temp["score_by_team"][team_index]*=-1
             else:
                 temp["score_by_team"][team_index] = 0
+                
+            if(team_index in pa[1][0]):
+                pass
+            elif(team_index in pa[1][3]):
+                temp["tie_breaker"][team_index]*=-1
+            else:
+                temp["tie_breaker"][team_index] = 0
                 
                 
         if(best_index in pa[1][0]):
@@ -81,10 +91,12 @@ def score(ans):
             temp["final_score"] = sum(temp["score_by_team"]) * (1+temp["bonus"]/100)
         else:
             temp["final_score"] = sum(temp["score_by_team"]) * (1-temp["bonus"]/100)
+            
+        temp["tie_breaker"] = sum(temp["tie_breaker"]) / (len(pa[1][0]) + len(pa[1][3]))
           
         scoreboard.append(temp.copy())
         
-    scoreboard = sorted(scoreboard, key=lambda x: x["final_score"], reverse=True)
+    scoreboard = sorted(scoreboard, key=lambda x: x["final_score"]+0.001*x["tie_breaker"], reverse=True)
     prev_score = -1
     for i in range(len(scoreboard)):
         if(scoreboard[i]["final_score"]!=prev_score):
@@ -109,6 +121,9 @@ def latest_score():
         for ss in s["score_by_team"]:
             print(f"{ss:.1f}", end="\t")
         print(f"{int(s['bonus'])}%\t{s['final_score']:.2f}\t\t{s['rank']}")
+        
+    for s in scoreboard:
+        print(s["name"], s["tie_breaker"])
         
         
 
